@@ -2,25 +2,27 @@ package com.cgi.dungeon_like.entity;
 
 public abstract class Entity {
 	protected String name;
-	protected int hp,def,force;
+	protected int def,force,gold;
+	protected float hp;
 	
 	
 	public abstract void upgrade(int roomId);
 	public abstract void spawn();
 
-	public Entity(String name, int hp, int def, int force) {
+	public Entity(String name, float hp, int def, int force,int gold) {
 		super();
 		this.name = name;
 		this.hp = hp;
 		this.def = def;
 		this.force = force;
+		this.gold = gold;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public int getHp() {
+	public float getHp() {
 		return hp;
 	}
 
@@ -36,7 +38,7 @@ public abstract class Entity {
 		this.name = name;
 	}
 
-	public void setHp(int hp) {
+	public void setHp(float hp) {
 		this.hp = hp;
 	}
 
@@ -46,6 +48,19 @@ public abstract class Entity {
 
 	public void setForce(int force) {
 		this.force = force;
+	}
+	
+	public int getGold() {
+		return gold;
+	}
+
+	public void setGold(int gold) {
+		this.gold = gold;
+	}
+	
+	public void showStats() {
+		System.out.println("***** Caractèristique de "+ this.getName() +" *****");
+		System.out.printf("Hp => %.2f %nDéfence => %d%nForce => %d %nOr => %d %n",this.getHp(),this.getDef(),this.getForce(),this.getGold());
 	}
 
 }
