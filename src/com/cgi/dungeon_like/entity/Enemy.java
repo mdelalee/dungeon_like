@@ -1,20 +1,9 @@
 package com.cgi.dungeon_like.entity;
 
 public class Enemy extends Entity {
-	
-	private int gold;
 
 	public Enemy() {
-		super("Unknown Enemy", 5, 5, 5);
-		this.gold = 1;
-	}
-	
-	public int getGold() {
-		return gold;
-	}
-
-	public void setGold(int gold) {
-		this.gold = gold;
+		super("Unknown Enemy", 5F, 5, 5,1);
 	}
 
 	public void upgrade(int roomId) {
@@ -27,6 +16,7 @@ public class Enemy extends Entity {
 	@Override
 	public void spawn() {
 		System.out.println("********** /!\\ Un monstre est apparu /!\\ **********");
+		this.showStats();
 	}
 
 }

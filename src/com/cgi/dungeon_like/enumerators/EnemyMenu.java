@@ -1,9 +1,8 @@
 package com.cgi.dungeon_like.enumerators;
 
 public enum EnemyMenu {
-	COMBATTRE("Combattre","Lancer le combat"),
-	EXAMINER("Examiner","Afficher les informations de la cible"),
-	FUIRE("Fuire","Retourné au début du donjon (perte de 50% de votre Or)");
+	COMBATTRE("Combattre","Lancer le combat (en cas de defaite, vous perdrez 50% de votre or et retourné au début du donjon)"),
+	FUIRE("Fuir","Retourné au début du donjon (perte de 75% de votre Or)");
 	
 	private String name;
 	private String description;
