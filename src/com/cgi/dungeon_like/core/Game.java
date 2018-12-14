@@ -1,11 +1,8 @@
 package com.cgi.dungeon_like.core;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Scanner;
 import com.cgi.dungeon_like.entity.*;
-import com.cgi.dungeon_like.enumerators.ChestMenu;
-import com.cgi.dungeon_like.enumerators.EnemyMenu;
 
 public class Game {
 
@@ -14,15 +11,13 @@ public class Game {
 	private Player player;
 	private Entity target;
 	private Scanner sc;
-	private List<ChestMenu> chestMenu;
-	private List<EnemyMenu> enemyMenu;
 	private boolean run;
+	private HashMap<String, HashMap<String, String>> menu;
 
 	public void initGame() {
 		this.player = new Player();
 		this.target = null;
-		this.chestMenu = Arrays.asList(ChestMenu.values());
-		this.enemyMenu = Arrays.asList(EnemyMenu.values());
+		this.constructMenu();
 
 		System.out.println("************* Dungeon Like *************");
 		System.out.printf("Bienvenu aventurier %nMerci de rensigner ton nom %n");
@@ -33,6 +28,22 @@ public class Game {
 		System.out.printf("Que le combat commence %s %n", player.getName());
 		this.roomId = 1;
 		this.previousRoomId = 0;
+	}
+
+	private void constructMenu() {
+		this.menu = new HashMap<>();
+		this.menu.put(Enemy.class.getSimpleName(), new HashMap<>());
+		this.menu.get(Enemy.class.getSimpleName()).put("Combattre","Lancer le combat (en cas de defaite, vous perdrez 50% de votre or et retourné au début du donjon)");
+		this.menu.get(Enemy.class.getSimpleName()).put("Fuir","Retourné au début du donjon (perte de 75% de votre Or)");
+		this.menu.get(Enemy.class.getSimpleName()).put("Upgrade","Amérlioer les caractéritiques");
+		
+		this.menu.put(Chest.class.getSimpleName(), new HashMap<>());
+		this.menu.get(Chest.class.getSimpleName()).put("Ouvrir","Récupérer le contenu du coffre");
+		
+		this.menu.put(null, new HashMap<>());
+		this.menu.get(null).put("Hp","+10 Hp contre 5 pièce d'or");
+		this.menu.get(null).put("Force","+1 force contre 3 pièce d'or");
+		this.menu.get(null).put("Def","+1 force contre 3 pièce d'or");
 	}
 
 	public void runGame() {
@@ -64,27 +75,30 @@ public class Game {
 					}
 				}while(!acceptedResponse);
 				switch(reponse) {
-					case "Combattre":
-						float playerHpBeforeFight = this.player.getHp();
-						boolean resultBattle = this.fight();
-						if(resultBattle) {
-							System.out.printf("Vous avez gagné %nVous remporter %d pièce(s) d'or",this.target.getGold());
-							this.player.setGold(this.player.getGold() + this.target.getGold());
-						}else {
-							System.out.println("Vous avez perdu \nVous perdez 50% de votre or,10% de vos caractéritique et retourné à la première salle");
-							this.resetGame(0.5F,0.9F);
-						}
-						nextRoom = true;
-						break;
-					case "Fuir":
-						nextRoom = this.fuir();
-						break;
-					case "Ouvrir":
-						nextRoom = this.openChest();
-						break;
+				case "Combattre":
+					boolean resultBattle = this.fight();
+					if(resultBattle) {
+						System.out.printf("Vous avez gagné %nVous remporter %d pièce(s) d'or",this.target.getGold());
+						this.player.setGold(this.player.getGold() + this.target.getGold());
+					}else {
+						System.out.println("Vous avez perdu \nVous perdez 50% de votre or,10% de vos caractéritique et retourné à la première salle");
+						this.resetGame(0.5F,0.9F);
+					}
+					nextRoom = true;
+					break;
+				case "Fuir":
+					nextRoom = this.fuir();
+					break;
+				case "Ouvrir":
+					nextRoom = this.openChest();
+					break;
+				case "Upgrade":
+					System.out.println("Upgrade");
+					System.exit(0);
+					break;
 				}
 			}while(!nextRoom);
-			
+
 			this.nextRoom();
 			if(this.getRoomId() == 25)
 				this.run = false;
@@ -98,7 +112,7 @@ public class Game {
 	private int getRoomId() {
 		return roomId;
 	}
-	
+
 	private void resetGame(float coefLostGold, float coefLostStat) {
 		this.roomId = 0;
 		this.player.setGold((int) (this.player.getGold() * coefLostGold));
@@ -120,38 +134,19 @@ public class Game {
 
 	private void getMenu(Entity target) {
 		System.out.println("Que voulez-vous faire ?");
-		if(target instanceof Chest) {
-			for(ChestMenu nom : this.chestMenu) {
-				System.out.printf("%s => %s %n",nom.getName(),nom.getDescription());
-			}
-		}else {
-			for(EnemyMenu nom : this.enemyMenu) {
-				System.out.printf("%s => %s %n",nom.getName(),nom.getDescription());
-			}
-		}
+		String typeMenu = target == null ? null : target.getClass().getSimpleName();
+		HashMap<String,String> menu = this.menu.get(typeMenu);
+		menu.keySet().stream()
+					.map(choix -> choix + " => " + menu.get(choix))
+					.forEach(System.out::println);
 	}
 
 	private void containInChestMenu(Entity target, String reponse) throws Exception {
-		boolean rep = false;
-		if(target instanceof Chest) {
-			for(ChestMenu choix : this.chestMenu) {
-				if(choix.getName().equals(reponse)) {
-					rep = true;
-					break;
-				}
-			}
-		}else {
-			for(EnemyMenu choix : this.enemyMenu) {
-				if(choix.getName().equals(reponse)) {
-					rep = true;
-					break;
-				}
-			}
-		}
-		if(!rep)
+		String typeMenu = target == null ? null : target.getClass().getSimpleName();
+		if(!this.menu.get(typeMenu).keySet().contains(reponse))
 			throw new Exception("*** Choix incorrecte ***");
 	}
-	
+
 	private boolean fight() {
 		while(this.player.getHp() > 0 && this.target.getHp() > 0) {
 			this.target.setHp((float) (this.target.getHp() - (this.player.getForce() * (this.target.getDef() * 0.01))));
@@ -159,7 +154,7 @@ public class Game {
 		}
 		return this.player.getHp() <= 0 ? false : true;
 	}
-	
+
 	private boolean fuir() {
 		String rep = null;
 		do {
@@ -179,7 +174,7 @@ public class Game {
 		}while(rep == null);
 		return false;
 	}
-	
+
 	private boolean openChest() {
 		System.out.println("Ouverture du coffre");
 		System.out.println("Vous obtenez "+this.target.getGold() + "pièces d'or");
