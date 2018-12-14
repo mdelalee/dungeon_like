@@ -2,7 +2,9 @@ package com.cgi.dungeon_like.entity;
 
 public abstract class Entity {
 	protected String name;
-	protected int def,force,gold;
+	protected int def;
+	protected int force;
+	protected int gold;
 	protected float hp;
 	
 	
@@ -61,6 +63,12 @@ public abstract class Entity {
 	public void showStats() {
 		System.out.println("***** Caractèristique de "+ this.getName() +" *****");
 		System.out.printf("Hp => %.2f %nDéfence => %d%nForce => %d %nOr => %d %n",this.getHp(),this.getDef(),this.getForce(),this.getGold());
+	}
+	
+	public void hit(Entity target) {
+		float damage = (float) (this.getForce() * (target.getDef() * 0.1));
+		float newHp = damage <= target.getHp() ? target.getHp() - damage : 0F;
+		target.setHp(newHp);
 	}
 
 }
