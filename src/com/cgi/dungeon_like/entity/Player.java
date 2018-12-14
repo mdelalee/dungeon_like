@@ -1,26 +1,50 @@
 package com.cgi.dungeon_like.entity;
 
+import java.util.HashMap;
+
+import com.cgi.dungeon_like.enumerators.DefaultStatsEnum;
 
 public class Player extends Entity {
-	public static float DEFAULTHP = 20F;
-	public static int DEFAULTFORCE = 10;
-	public static int DEFAULTDEF = 10;
-	public static int DEFAULTGOLD = 0;
 
 	public Player() {
-		super("Player", 20F, 10, 10,0);
+		super("Player", DefaultStatsEnum.PLAYER_HP.getValue(),
+				DefaultStatsEnum.PLAYER_DEF.getValue(),
+				DefaultStatsEnum.PLAYER_FORCE.getValue(),
+				DefaultStatsEnum.PLAYER_GOLD.getValue());
 	}
 	
 	public void setName(String name) {
 		this.name = name;
-	}	
+	}
 
 	@Override
 	public void upgrade(int roomId) {}
-
+	
 	@Override
 	public void spawn() {
 		this.showStats();
 	}
-
+	
+	public void upgradePlayer(String stat) throws Exception {
+		HashMap<String, Integer> statCost = new HashMap<>();
+		statCost.put("Hp", 5);
+		statCost.put("Def",3);
+		statCost.put("Force",3);
+		if(this.getGold() < statCost.get(stat)) {
+			throw new Exception("Pas assez d'or");
+		}
+		switch(stat) {
+		case "Hp":
+			this.setHp(this.getHp() + 10);
+			break;
+		case "Def":
+			this.setDef(this.getDef() + 1);
+			break;
+			
+		case "Force":
+			this.setForce(this.getForce() + 1);
+			break;
+		}
+		this.setGold(this.getGold() - statCost.get(stat));
+	}
 }

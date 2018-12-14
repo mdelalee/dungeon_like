@@ -1,16 +1,17 @@
 package com.cgi.dungeon_like.entity;
 
 public class Enemy extends Entity {
-
-	public Enemy() {
-		super("Unknown Enemy", 5F, 5, 5,1);
+	
+	public Enemy(String name, float hp, int def, int force,int gold) {
+		super(name,hp,def,force,gold);
 	}
 
 	public void upgrade(int roomId) {
-		this.setDef(this.getDef() + (int)(0.5 * roomId));
-		this.setHp(this.getHp() + (int)(0.5 * roomId));
-		this.setForce(this.getForce() + (int)(0.5 * roomId));
-		this.setGold(this.getGold() + (int)(0.5 * roomId));
+		float coef = roomId % 10 == 0 ? 0.5F : 0.4F;
+		this.setDef((int) (this.getDef() * coef));
+		this.setHp(this.getHp() * coef);
+		this.setForce((int) (this.getForce() * coef));
+		this.setGold((int) (this.getGold() * coef));
 	}
 
 	@Override
