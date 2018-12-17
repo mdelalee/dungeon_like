@@ -2,6 +2,7 @@ package com.cgi.dungeon_like.core;
 
 import java.util.HashMap;
 import java.util.Scanner;
+
 import com.cgi.dungeon_like.entity.*;
 import com.cgi.dungeon_like.enumerators.DefaultStatsEnum;
 
@@ -14,7 +15,8 @@ public class Game {
 	private Scanner sc;
 	private boolean run;
 	private HashMap<String, HashMap<String, String>> menu;
-
+	
+	
 	public void initGame() {
 		this.player = new Player();
 		this.target = null;
@@ -139,7 +141,7 @@ public class Game {
 		this.player.setHp(newHp);
 	}
 
-	public Entity spawnEntity() {
+	private Entity spawnEntity() {
 		int rnd = (int) (Math.random() * 100);
 		if (rnd < 95) {
 			float coef = (10+this.roomId)/10F;
@@ -162,7 +164,7 @@ public class Game {
 	}
 
 	private void containInChestMenu(Entity target, String reponse) throws Exception {
-		String typeMenu = target == null ? null : target.getClass().getSimpleName();
+		String typeMenu = (target == null) ? null : target.getClass().getSimpleName();
 		if(!this.menu.get(typeMenu).keySet().contains(reponse))
 			throw new Exception("*** Choix incorrecte ***");
 	}

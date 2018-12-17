@@ -10,7 +10,15 @@ public abstract class Entity {
 	
 	public abstract void upgrade(int roomId);
 	public abstract void spawn();
-
+	
+	/**
+	 * 
+	 * @param name
+	 * @param hp
+	 * @param def
+	 * @param force
+	 * @param gold
+	 */
 	public Entity(String name, float hp, int def, int force,int gold) {
 		super();
 		this.name = name;
